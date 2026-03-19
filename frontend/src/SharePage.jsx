@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 import "./SharePage.css";
 
 function SharePage() {
@@ -18,6 +19,7 @@ function SharePage() {
     const fetchChat = async () => {
       try {
         const res = await fetch(`${API}/api/share/${threadid}`);
+
         if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
@@ -43,8 +45,13 @@ function SharePage() {
     navigator.clipboard.writeText(text);
   };
 
-  if (loading) return <div className="center-screen">Loading...</div>;
-  if (error) return <div className="center-screen">{error}</div>;
+  if (loading) {
+    return <div className="center-screen">Loading conversation...</div>;
+  }
+
+  if (error) {
+    return <div className="center-screen">{error}</div>;
+  }
 
   return (
     <div className="share-page">
@@ -57,33 +64,41 @@ function SharePage() {
       <div className="chat-container">
         <div className="chat-box">
 
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`chat-row ${
-                msg.role === "user" ? "user-row" : "ai-row"
-              }`}
-            >
-              <div className={msg.role === "user" ? "user-bubble" : "ai-bubble"}>
-                
-                <div className="role">
-                  {msg.role === "user" ? "You" : "AI"}
-                </div>
-
-                <div className="content">
-                  {msg.content}
-                </div>
-
-                <button
-                  className="copy-btn"
-                  onClick={() => copyMessage(msg.content)}
+          {messages.length === 0 ? (
+            <p>No messages found</p>
+          ) : (
+            messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`chat-row ${
+                  msg.role === "user" ? "user-row" : "ai-row"
+                }`}
+              >
+                <div
+                  className={
+                    msg.role === "user" ? "user-bubble" : "ai-bubble"
+                  }
                 >
-                  Copy
-                </button>
+                  <div className="role">
+                    {msg.role === "user" ? "You" : "AI"}
+                  </div>
 
+                  <div className="content">
+                    <ReactMarkdown>
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
+
+                  <button
+                    className="copy-btn"
+                    onClick={() => copyMessage(msg.content)}
+                  >
+                    Copy
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
 
           <div ref={chatEndRef}></div>
         </div>
