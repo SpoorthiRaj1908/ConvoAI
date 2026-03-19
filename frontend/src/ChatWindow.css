@@ -1,0 +1,226 @@
+.ChatWindow {
+    background-color: #212121;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar span {
+    margin: 1rem 2rem;
+    font-weight: 500;
+}
+
+
+.usericondiv {
+    margin: 1rem 2rem;
+    position: relative;
+}
+
+.usericon {
+    background-color: #339cff;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+
+.userMenu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+
+    background: #1f1f1f;
+    border-radius: 8px;
+
+    width: 120px;
+
+    padding: 8px;
+
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.userMenu p {
+    margin: 0;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.userMenu p:hover {
+    background: #2a2a2a;
+    border-radius: 4px;
+    color: #8b5cf6;
+}
+
+
+.chatinpt {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 20px 0 10px;
+
+    background: linear-gradient(to top, #212121 70%, transparent);
+}
+
+.userinpt {
+    width: 100%;
+    max-width: 800px;
+
+    display: flex;
+    align-items: center;
+
+    background: #2a2a2a;
+
+    border-radius: 24px;
+
+    padding: 8px 12px;
+
+    gap: 8px;
+}
+
+
+.userinpt input {
+    width: 100%;
+    border: none;
+    background: transparent;
+
+    padding: 10px;
+
+    font-size: 1rem;
+
+    color: white;
+}
+
+.userinpt input:focus {
+    outline: none;
+}
+
+
+.uploadIcon {
+    cursor: pointer;
+    font-size: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9ca3af;
+
+    transition: color 0.2s ease;
+}
+
+.uploadIcon:hover {
+    color: #ffffff;
+}
+
+
+.micBtn {
+    cursor: pointer;
+
+    font-size: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9ca3af;
+
+    transition: color 0.2s ease;
+}
+
+.micBtn:hover {
+    color: #ffffff;
+}
+
+
+#submit {
+    cursor: pointer;
+
+    height: 36px;
+    width: 36px;
+
+    font-size: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9ca3af;
+
+    transition: color 0.2s ease;
+}
+
+#submit:hover {
+    color: #ffffff;
+}
+
+
+.filePreview {
+    font-size: 13px;
+    color: #aaa;
+
+    margin-bottom: 5px;
+
+    max-width: 800px;
+}
+
+
+.loaderContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+
+.info {
+    font-size: 0.8rem;
+    color: #9aa0a6;
+    text-align: center;
+    margin-top: 8px;
+}
+.toast{
+position:fixed;
+top:20px;
+right:20px;
+background:#2a2a2a;
+color:#fff;
+padding:12px 18px;
+border-radius:6px;
+font-size:14px;
+box-shadow:0 0 10px rgba(0,0,0,0.4);
+z-index:2000;
+animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(-10px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}

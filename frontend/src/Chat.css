@@ -1,0 +1,181 @@
+
+.chatPage{
+    flex:1;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    background:#0e1014;
+}
+
+
+.emptyState{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    color:#6b7280;
+}
+
+.emptyState h1{
+    font-size:36px;
+    font-weight:600;
+    letter-spacing:0.5px;
+}
+
+
+.chats{
+    flex:1;
+    overflow-y:auto;
+    width:100%;
+    max-width:720px;
+    margin:40px auto;
+    padding:30px 24px 140px;
+
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+
+    background:#13161c;
+    border-radius:20px;
+
+    box-shadow:0 0 0 1px #1f232b;
+
+    scrollbar-width:thin;
+    scrollbar-color:#2c313a transparent;
+}
+
+
+.userDiv{
+    display:flex;
+    justify-content:flex-end;
+}
+
+.gptDiv{
+    display:flex;
+    justify-content:flex-start;
+}
+
+
+.userMessage{
+    background:#3b82f6;
+    color:white;
+
+    padding:12px 16px;
+
+    border-radius:16px 16px 4px 16px;
+
+    max-width:65%;
+
+    font-size:14.5px;
+    line-height:1.6;
+    font-weight:500;
+
+    word-wrap:break-word;
+}
+
+
+.gptMessage{
+    background:#1a1f26;
+    color:#e5e7eb;
+
+    padding:14px 18px;
+
+    border-radius:16px 16px 16px 4px;
+
+    max-width:100%;
+
+    font-size:14.8px;
+    line-height:1.7;
+
+    border:1px solid #242933;
+
+    word-wrap:break-word;
+}
+
+
+.gptMessage h1,
+.gptMessage h2,
+.gptMessage h3{
+    margin-top:16px;
+    margin-bottom:6px;
+    font-weight:600;
+    color:#f3f4f6;
+}
+
+.gptMessage p{
+    margin:8px 0;
+    color:#d1d5db;
+}
+
+.gptMessage ul,
+.gptMessage ol{
+    padding-left:22px;
+    margin:10px 0;
+}
+
+.gptMessage li{
+    margin:6px 0;
+}
+
+
+.inlineCode{
+    background:#111318;
+    padding:3px 8px;
+    border-radius:6px;
+
+    font-family:monospace;
+    font-size:13.5px;
+
+    color:#60a5fa;
+}
+
+
+pre{
+    background:#0f1217;
+    padding:14px;
+    border-radius:10px;
+
+    overflow-x:auto;
+
+    font-size:13px;
+    line-height:1.6;
+
+    border:1px solid #1f232b;
+}
+
+code{
+    font-family:monospace;
+}
+
+
+.chats::-webkit-scrollbar{
+    width:6px;
+}
+
+.chats::-webkit-scrollbar-thumb{
+    background:#2c313a;
+    border-radius:10px;
+}
+
+.chats::-webkit-scrollbar-thumb:hover{
+    background:#3b4250;
+}
+
+
+@media (max-width:768px){
+
+    .chats{
+        max-width:100%;
+        margin:0;
+        border-radius:0;
+        padding:20px 16px 120px;
+    }
+
+    .userMessage{
+        max-width:75%;
+    }
+
+}
