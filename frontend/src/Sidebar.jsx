@@ -18,21 +18,21 @@ function Sidebar() {
   const [searchResults, setSearchResults] = useState([]);
   const [toast, setToast] = useState("");
 
+  const API = import.meta.env.VITE_API_URL;
+
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2500);
   };
 
-
   const fetchThreads = async () => {
 
     const token = localStorage.getItem("token");
-
     if (!token) return;
 
     try {
 
-      const res = await fetch("http://localhost:5000/api/thread", {
+      const res = await fetch(`${API}/api/thread`, {   
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -54,17 +54,14 @@ function Sidebar() {
 
   };
 
-
   useEffect(() => {
 
     const token = localStorage.getItem("token");
-
     if (!token) return;
 
     fetchThreads();
 
   }, []);
-
 
   const loadThread = async (threadid) => {
 
@@ -78,7 +75,7 @@ function Sidebar() {
     try {
 
       const res = await fetch(
-        `http://localhost:5000/api/thread/${threadid}`,
+        `${API}/api/thread/${threadid}`,   
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -99,7 +96,6 @@ function Sidebar() {
 
   };
 
-
   const handleNewChat = () => {
 
     setPrevChats([]);
@@ -107,7 +103,6 @@ function Sidebar() {
     setNewChat(true);
 
   };
-
 
   const deleteThread = async (threadid) => {
 
@@ -120,7 +115,7 @@ function Sidebar() {
 
     try {
 
-      await fetch(`http://localhost:5000/api/thread/${threadid}`, {
+      await fetch(`${API}/api/thread/${threadid}`, {   
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -137,11 +132,9 @@ function Sidebar() {
 
   };
 
-
   const renameThread = async (threadid, oldTitle) => {
 
     const newTitle = prompt("Rename chat", oldTitle);
-
     if (!newTitle) return;
 
     const token = localStorage.getItem("token");
@@ -153,7 +146,7 @@ function Sidebar() {
 
     try {
 
-      await fetch(`http://localhost:5000/api/thread/${threadid}`, {
+      await fetch(`${API}/api/thread/${threadid}`, {  
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -172,17 +165,14 @@ function Sidebar() {
 
   };
 
-
   const shareThread = (threadid) => {
 
     const shareLink = `${window.location.origin}/share/${threadid}`;
-
     navigator.clipboard.writeText(shareLink);
 
     showToast("Share link copied");
 
   };
-
 
   const handleSearch = async (query) => {
 
@@ -203,7 +193,7 @@ function Sidebar() {
     try {
 
       const res = await fetch(
-        `http://localhost:5000/api/search/${query}`,
+        `${API}/api/search/${query}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -236,7 +226,6 @@ function Sidebar() {
         </div>
       )}
 
-
       <button className="newChatBtn" onClick={handleNewChat}>
 
         <img
@@ -251,7 +240,6 @@ function Sidebar() {
 
       </button>
 
-
       <input
         type="text"
         placeholder="Search chats..."
@@ -259,7 +247,6 @@ function Sidebar() {
         value={searchQuery}
         onChange={(e) => handleSearch(e.target.value)}
       />
-
 
       {searchResults.length > 0 && (
 
@@ -280,7 +267,6 @@ function Sidebar() {
         </div>
 
       )}
-
 
       <div className="threads">
 
@@ -328,7 +314,6 @@ function Sidebar() {
         ))}
 
       </div>
-
 
       <div className="sign">
         <p>made by spoorthi 💕</p>
