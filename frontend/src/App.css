@@ -10,14 +10,43 @@ body{
   background:#212121;
 }
 
-
 .app{
   background-color:#212121;
   display:flex;
   height:100vh;
   width:100%;
+  overflow:hidden; /* 🔥 prevents scroll issues */
 }
 
+/* 🔥 MOBILE MENU BUTTON */
+.mobileMenuBtn{
+  display:none;
+  position:fixed;
+  top:15px;
+  left:15px;
+  z-index:1100;
+  font-size:22px;
+  background:#2a2a2a;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* 🔥 MOBILE FIX */
+@media (max-width:768px){
+
+  .app{
+    flex-direction:column;
+  }
+
+  .mobileMenuBtn{
+    display:block;
+  }
+
+}
+
+
+/* ================= AUTH ================= */
 
 .authOverlay{
   position:fixed;
@@ -35,7 +64,6 @@ body{
   z-index:9999;
 }
 
-
 .authModal{
   background:#1e1e1e;
   padding:35px;
@@ -49,7 +77,6 @@ body{
   box-shadow:0 0 30px rgba(0,0,0,0.7);
 }
 
-
 .authModal input{
   padding:10px;
   border-radius:6px;
@@ -57,7 +84,6 @@ body{
   outline:none;
   background:#2a2a2a;
 }
-
 
 .authModal button{
   padding:10px;
@@ -68,7 +94,6 @@ body{
   font-weight:500;
 }
 
-
 .authSwitch{
   font-size:14px;
   text-align:center;
@@ -78,38 +103,39 @@ body{
   color:#8b5cf6;
   cursor:pointer;
 }
+
+
+/* ================= TOAST ================= */
+
 .toast{
-position:fixed;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
 
-top:50%;
-left:50%;
+  background:#2a2a2a;
+  color:#fff;
 
-transform:translate(-50%, -50%);
+  padding:14px 22px;
+  border-radius:8px;
 
-background:#2a2a2a;
-color:#fff;
+  font-size:15px;
+  font-weight:500;
 
-padding:14px 22px;
+  box-shadow:0 0 15px rgba(0,0,0,0.5);
 
-border-radius:8px;
+  z-index:3000;
 
-font-size:15px;
-font-weight:500;
-
-box-shadow:0 0 15px rgba(0,0,0,0.5);
-
-z-index:3000;
-
-animation:fadeIn 0.25s ease;
+  animation:fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn{
-from{
-opacity:0;
-transform:translate(-50%, -60%);
-}
-to{
-opacity:1;
-transform:translate(-50%, -50%);
-}
+  from{
+    opacity:0;
+    transform:translate(-50%, -60%);
+  }
+  to{
+    opacity:1;
+    transform:translate(-50%, -50%);
+  }
 }

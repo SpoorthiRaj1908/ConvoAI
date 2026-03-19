@@ -19,6 +19,7 @@ function App() {
   const [newChat,setNewChat]=useState(true);
   const [currthreadid,setcurrthreadid]=useState(uuidv1());
   const [allThreads,setAllThreads]=useState([]);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const [showRegister,setShowRegister]=useState(false);
 

@@ -4,7 +4,7 @@ import { MyContext } from "./MyContext";
 import { v1 as uuidv1 } from "uuid";
 import logo from "./assets/convoai-logo.png";
 
-function Sidebar() {
+function Sidebar({ closeSidebar }) {   
 
   const {
     allThreads,
@@ -31,8 +31,7 @@ function Sidebar() {
     if (!token) return;
 
     try {
-
-      const res = await fetch(`${API}/api/thread`, {   
+      const res = await fetch(`${API}/api/thread`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -51,16 +50,12 @@ function Sidebar() {
       setAllThreads([]);
       showToast("Failed to load threads");
     }
-
   };
 
   useEffect(() => {
-
     const token = localStorage.getItem("token");
     if (!token) return;
-
     fetchThreads();
-
   }, []);
 
   const loadThread = async (threadid) => {
@@ -74,14 +69,11 @@ function Sidebar() {
 
     try {
 
-      const res = await fetch(
-        `${API}/api/thread/${threadid}`,   
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const res = await fetch(`${API}/api/thread/${threadid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
       const data = await res.json();
 
@@ -89,19 +81,20 @@ function Sidebar() {
       setPrevChats(data);
       setNewChat(false);
 
+      closeSidebar && closeSidebar();   
+
     } catch (err) {
       console.log(err);
       showToast("Failed to load chat");
     }
-
   };
 
   const handleNewChat = () => {
-
     setPrevChats([]);
     setcurrthreadid(uuidv1());
     setNewChat(true);
 
+    closeSidebar && closeSidebar();  
   };
 
   const deleteThread = async (threadid) => {
@@ -115,7 +108,7 @@ function Sidebar() {
 
     try {
 
-      await fetch(`${API}/api/thread/${threadid}`, {   
+      await fetch(`${API}/api/thread/${threadid}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -129,7 +122,6 @@ function Sidebar() {
       console.log(err);
       showToast("Delete failed");
     }
-
   };
 
   const renameThread = async (threadid, oldTitle) => {
@@ -146,7 +138,7 @@ function Sidebar() {
 
     try {
 
-      await fetch(`${API}/api/thread/${threadid}`, {  
+      await fetch(`${API}/api/thread/${threadid}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +154,6 @@ function Sidebar() {
       console.log(err);
       showToast("Rename failed");
     }
-
   };
 
   const shareThread = (threadid) => {
@@ -171,7 +162,6 @@ function Sidebar() {
     navigator.clipboard.writeText(shareLink);
 
     showToast("Share link copied");
-
   };
 
   const handleSearch = async (query) => {
@@ -192,14 +182,11 @@ function Sidebar() {
 
     try {
 
-      const res = await fetch(
-        `${API}/api/search/${query}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const res = await fetch(`${API}/api/search/${query}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
       const data = await res.json();
 
@@ -213,26 +200,17 @@ function Sidebar() {
       console.log(err);
       showToast("Search failed");
     }
-
   };
 
   return (
 
     <section className="sidebar">
 
-      {toast && (
-        <div className="toast">
-          {toast}
-        </div>
-      )}
+      {toast && <div className="toast">{toast}</div>}
 
       <button className="newChatBtn" onClick={handleNewChat}>
 
-        <img
-          src={logo}
-          alt="CONVOAI Logo"
-          className="logo"
-        />
+        <img src={logo} alt="CONVOAI Logo" className="logo" />
 
         <span className="icon">
           <i className="fa-solid fa-pen-to-square"></i>
@@ -249,11 +227,8 @@ function Sidebar() {
       />
 
       {searchResults.length > 0 && (
-
         <div className="searchResults">
-
           {searchResults.map((item, index) => (
-
             <div
               key={index}
               className="searchResult"
@@ -261,11 +236,8 @@ function Sidebar() {
             >
               {item.message.slice(0, 60)}...
             </div>
-
           ))}
-
         </div>
-
       )}
 
       <div className="threads">
@@ -322,7 +294,6 @@ function Sidebar() {
     </section>
 
   );
-
 }
 
 export default Sidebar;
