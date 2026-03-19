@@ -16,7 +16,8 @@ function SharePage() {
   useEffect(() => {
     const fetchChat = async () => {
       try {
-        const res = await fetch(`${API}/api/thread/${threadid}`);
+        // ✅ FIXED: using public share route
+        const res = await fetch(`${API}/api/share/${threadid}`);
 
         if (!res.ok) {
           throw new Error("Failed to fetch");
@@ -24,7 +25,9 @@ function SharePage() {
 
         const data = await res.json();
 
+        // ✅ backend returns messages array
         setMessages(Array.isArray(data) ? data : []);
+
       } catch (err) {
         console.log(err);
         setError("Unable to load shared chat");
@@ -36,10 +39,12 @@ function SharePage() {
     fetchChat();
   }, [threadid, API]);
 
+  // ✅ auto scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // 🔄 Loading state
   if (loading) {
     return (
       <div className="center-screen">
@@ -48,6 +53,7 @@ function SharePage() {
     );
   }
 
+  // ❌ Error state
   if (error) {
     return (
       <div className="center-screen">
