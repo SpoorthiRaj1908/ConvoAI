@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   background: #f7f7f8;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .share-header {
@@ -12,8 +12,10 @@
   font-size: 20px;
   font-weight: 600;
   background: #ffffff;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #ddd;
+  color: #222;   
 }
+
 
 .share-chatbox {
   flex: 1;
@@ -21,35 +23,33 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .user-msg {
   align-self: flex-end;
   background: #d1e7dd;
-  color: #000;
+  color: #000;   
   padding: 10px 14px;
   border-radius: 12px;
   max-width: 70%;
-  word-wrap: break-word;
 }
 
 .ai-msg {
   align-self: flex-start;
   background: #ffffff;
-  color: #000;
+  color: #000;   
   padding: 10px 14px;
   border-radius: 12px;
+  border: 1px solid #ddd;
   max-width: 70%;
-  border: 1px solid #eee;
-  word-wrap: break-word;
 }
 
 .msg-role {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: bold;
   margin-bottom: 4px;
-  opacity: 0.6;
+  color: #555;   
 }
 
 .center-screen {
@@ -58,20 +58,5 @@
   justify-content: center;
   align-items: center;
   font-size: 18px;
-}
-
-@media (max-width: 768px) {
-  .share-chatbox {
-    padding: 12px;
-  }
-
-  .user-msg,
-  .ai-msg {
-    max-width: 85%;
-    font-size: 14px;
-  }
-
-  .share-header {
-    font-size: 18px;
-  }
+  color: #333;   
 }
