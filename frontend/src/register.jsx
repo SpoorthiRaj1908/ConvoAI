@@ -2,95 +2,97 @@ import { useState } from "react";
 
 function Register({ onRegisterSuccess, openLogin }) {
 
-const [name,setName] = useState("");
-const [email,setEmail] = useState("");
-const [password,setPassword] = useState("");
-const [loading,setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const handleRegister = async () => {
+  const API = import.meta.env.VITE_API_URL;
 
-if(!name || !email || !password){
-  return;
-}
+  const handleRegister = async () => {
 
-setLoading(true);
+    if (!name || !email || !password) return;
 
-try{
+    setLoading(true);
 
-  const res = await fetch("http://localhost:5000/api/auth/register",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({ name,email,password })
-  });
+    try {
 
-  const data = await res.json();
+      const res = await fetch(`${API}/api/auth/register`, {  
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+      });
 
-  if(res.ok){
+      const data = await res.json();
 
-    localStorage.setItem("token",data.token);
+      if (res.ok) {
 
-    if(onRegisterSuccess){
-      onRegisterSuccess(data.token);
+        localStorage.setItem("token", data.token);
+
+        if (onRegisterSuccess) {
+          onRegisterSuccess(data.token);
+        }
+
+        window.location.reload();
+
+      } else {
+        console.error("Register failed:", data);
+      }
+
+    } catch (err) {
+
+      console.error("Error:", err);
+
+    } finally {
+
+      setLoading(false);
+
     }
 
-    window.location.reload();
+  };
 
-  }
+  return (
 
-}catch(err){
+    <div className="authModal">
 
-  console.error(err);
+      <h2>Register</h2>
 
-}finally{
+      <input
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+      />
 
-  setLoading(false);
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+      />
 
-}
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+      />
 
-};
+      <button onClick={handleRegister} disabled={loading}>
+        {loading ? "Registering..." : "Register"}
+      </button>
 
-return (
+      <p className="authSwitch">
+        Already have an account?
+        <span onClick={openLogin}> Login</span>
+      </p>
 
-<div className="authModal">
+    </div>
 
-  <h2>Register</h2>
-
-  <input
-    placeholder="Name"
-    value={name}
-    onChange={(e)=>setName(e.target.value)}
-    onKeyDown={(e)=> e.key === "Enter" && handleRegister()}
-  />
-
-  <input
-    placeholder="Email"
-    value={email}
-    onChange={(e)=>setEmail(e.target.value)}
-    onKeyDown={(e)=> e.key === "Enter" && handleRegister()}
-  />
-
-  <input
-    type="password"
-    placeholder="Password"
-    value={password}
-    onChange={(e)=>setPassword(e.target.value)}
-    onKeyDown={(e)=> e.key === "Enter" && handleRegister()}
-  />
-
-  <button onClick={handleRegister} disabled={loading}>
-    {loading ? "Registering..." : "Register"}
-  </button>
-
-  <p className="authSwitch">
-    Already have an account?
-    <span onClick={openLogin}> Login</span>
-  </p>
-
-</div>
-
-);
+  );
 
 }
 

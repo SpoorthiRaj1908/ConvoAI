@@ -2,88 +2,90 @@ import { useState } from "react";
 
 function Login({ onLoginSuccess, openRegister }) {
 
-const [email,setEmail] = useState("");
-const [password,setPassword] = useState("");
-const [loading,setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const handleLogin = async () => {
+  // ✅ API from env
+  const API = import.meta.env.VITE_API_URL;
 
-if(!email || !password){
-  return;
-}
+  const handleLogin = async () => {
 
-setLoading(true);
+    if (!email || !password) return;
 
-try{
+    setLoading(true);
 
-  const res = await fetch("http://localhost:5000/api/auth/login",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({ email,password })
-  });
+    try {
 
-  const data = await res.json();
+      const res = await fetch(`${API}/api/auth/login`, {   // ✅ FIXED
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-  if(res.ok){
+      const data = await res.json();
 
-    localStorage.setItem("token",data.token);
+      if (res.ok) {
 
-    if(onLoginSuccess){
-      onLoginSuccess(data.token);
+        localStorage.setItem("token", data.token);
+
+        if (onLoginSuccess) {
+          onLoginSuccess(data.token);
+        }
+
+        window.location.reload();
+
+      } else {
+        console.error("Login failed:", data);
+      }
+
+    } catch (err) {
+
+      console.error("Error:", err);
+
+    } finally {
+
+      setLoading(false);
+
     }
 
-    window.location.reload();
+  };
 
-  }
+  return (
 
-}catch(err){
+    <div className="authModal">
 
-  console.error(err);
+      <h2>Login</h2>
 
-}finally{
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+      />
 
-  setLoading(false);
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+      />
 
-}
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
 
-};
+      <p className="authSwitch">
+        Don't have an account?
+        <span onClick={openRegister}> Register</span>
+      </p>
 
-return (
+    </div>
 
-<div className="authModal">
-
-  <h2>Login</h2>
-
-  <input
-    placeholder="Email"
-    value={email}
-    onChange={(e)=>setEmail(e.target.value)}
-    onKeyDown={(e)=> e.key === "Enter" && handleLogin()}
-  />
-
-  <input
-    type="password"
-    placeholder="Password"
-    value={password}
-    onChange={(e)=>setPassword(e.target.value)}
-    onKeyDown={(e)=> e.key === "Enter" && handleLogin()}
-  />
-
-  <button onClick={handleLogin} disabled={loading}>
-    {loading ? "Logging in..." : "Login"}
-  </button>
-
-  <p className="authSwitch">
-    Don't have an account?
-    <span onClick={openRegister}> Register</span>
-  </p>
-
-</div>
-
-
-);
+  );
 
 }
 
