@@ -25,7 +25,6 @@ function SharePage() {
 
         setTitle(data.title || "");
         setMessages(Array.isArray(data.messages) ? data.messages : []);
-
       } catch (err) {
         console.log(err);
         setError("Unable to load shared chat");
@@ -64,49 +63,53 @@ function SharePage() {
   return (
     <div className="share-container">
 
-      <h2 className="share-header">
-        💬 {title || "Shared Conversation"}
-      </h2>
+      <div className="share-top">
+        <h2 className="share-header">
+          💬 {title || "Shared Conversation"}
+        </h2>
 
-      <p className="share-subtext">
-        Shared via ConvoAI
-      </p>
+        <p className="share-subtext">
+          Shared via ConvoAI
+        </p>
+      </div>
 
-      <div className="share-chatbox">
+      <div className="share-main">
+        <div className="share-chatbox">
 
-        {messages.length === 0 ? (
-          <p>No messages found</p>
-        ) : (
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`message-wrapper ${
-                msg.role === "user" ? "user-wrap" : "ai-wrap"
-              }`}
-            >
+          {messages.length === 0 ? (
+            <p>No messages found</p>
+          ) : (
+            messages.map((msg, index) => (
               <div
-                className={msg.role === "user" ? "user-msg" : "ai-msg"}
+                key={index}
+                className={`message-wrapper ${
+                  msg.role === "user" ? "user-wrap" : "ai-wrap"
+                }`}
               >
-                <div className="msg-role">
-                  {msg.role === "user" ? "You" : "AI"}
-                </div>
-
-                <div className="msg-content">
-                  {msg.content}
-                </div>
-
-                <button
-                  className="copy-btn"
-                  onClick={() => copyMessage(msg.content)}
+                <div
+                  className={msg.role === "user" ? "user-msg" : "ai-msg"}
                 >
-                  Copy
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+                  <div className="msg-role">
+                    {msg.role === "user" ? "You" : "AI"}
+                  </div>
 
-        <div ref={chatEndRef}></div>
+                  <div className="msg-content">
+                    {msg.content}
+                  </div>
+
+                  <button
+                    className="copy-btn"
+                    onClick={() => copyMessage(msg.content)}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+
+          <div ref={chatEndRef}></div>
+        </div>
       </div>
 
     </div>
