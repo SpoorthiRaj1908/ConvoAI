@@ -18,7 +18,6 @@ function SharePage() {
     const fetchChat = async () => {
       try {
         const res = await fetch(`${API}/api/share/${threadid}`);
-
         if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
@@ -44,74 +43,51 @@ function SharePage() {
     navigator.clipboard.writeText(text);
   };
 
-  if (loading) {
-    return (
-      <div className="center-screen">
-        <p>Loading conversation...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="center-screen">
-        <p>{error}</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="center-screen">Loading...</div>;
+  if (error) return <div className="center-screen">{error}</div>;
 
   return (
-    <div className="share-container">
+    <div className="share-page">
 
-      <div className="share-top">
-        <h2 className="share-header">
-          💬 {title || "Shared Conversation"}
-        </h2>
-
-        <p className="share-subtext">
-          Shared via ConvoAI
-        </p>
+      <div className="share-title">
+        💬 {title || "Shared Conversation"}
+        <div className="share-sub">Shared via ConvoAI</div>
       </div>
 
-      <div className="share-main">
-        <div className="share-chatbox">
+      <div className="chat-container">
+        <div className="chat-box">
 
-          {messages.length === 0 ? (
-            <p>No messages found</p>
-          ) : (
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`message-wrapper ${
-                  msg.role === "user" ? "user-wrap" : "ai-wrap"
-                }`}
-              >
-                <div
-                  className={msg.role === "user" ? "user-msg" : "ai-msg"}
-                >
-                  <div className="msg-role">
-                    {msg.role === "user" ? "You" : "AI"}
-                  </div>
-
-                  <div className="msg-content">
-                    {msg.content}
-                  </div>
-
-                  <button
-                    className="copy-btn"
-                    onClick={() => copyMessage(msg.content)}
-                  >
-                    Copy
-                  </button>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`chat-row ${
+                msg.role === "user" ? "user-row" : "ai-row"
+              }`}
+            >
+              <div className={msg.role === "user" ? "user-bubble" : "ai-bubble"}>
+                
+                <div className="role">
+                  {msg.role === "user" ? "You" : "AI"}
                 </div>
+
+                <div className="content">
+                  {msg.content}
+                </div>
+
+                <button
+                  className="copy-btn"
+                  onClick={() => copyMessage(msg.content)}
+                >
+                  Copy
+                </button>
+
               </div>
-            ))
-          )}
+            </div>
+          ))}
 
           <div ref={chatEndRef}></div>
         </div>
       </div>
-
     </div>
   );
 }
