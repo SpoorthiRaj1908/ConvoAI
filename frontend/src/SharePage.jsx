@@ -6,6 +6,7 @@ function SharePage() {
   const { threadid } = useParams();
 
   const [messages, setMessages] = useState([]);
+  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -16,7 +17,6 @@ function SharePage() {
   useEffect(() => {
     const fetchChat = async () => {
       try {
-        // ✅ FIXED: using public share route
         const res = await fetch(`${API}/api/share/${threadid}`);
 
         if (!res.ok) {
@@ -25,8 +25,8 @@ function SharePage() {
 
         const data = await res.json();
 
-        // ✅ backend returns messages array
-        setMessages(Array.isArray(data) ? data : []);
+        setTitle(data.title || "");
+        setMessages(Array.isArray(data.messages) ? data.messages : []);
 
       } catch (err) {
         console.log(err);
@@ -39,12 +39,10 @@ function SharePage() {
     fetchChat();
   }, [threadid, API]);
 
-  // ✅ auto scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 🔄 Loading state
   if (loading) {
     return (
       <div className="center-screen">
@@ -53,7 +51,6 @@ function SharePage() {
     );
   }
 
-  // ❌ Error state
   if (error) {
     return (
       <div className="center-screen">
@@ -65,7 +62,9 @@ function SharePage() {
   return (
     <div className="share-container">
 
-      <h2 className="share-header">Shared Conversation</h2>
+      <h2 className="share-header">
+        {title || "Shared Conversation"}
+      </h2>
 
       <div className="share-chatbox">
         {messages.length === 0 ? (
