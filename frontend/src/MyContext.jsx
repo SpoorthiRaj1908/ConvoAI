@@ -8,6 +8,8 @@ export const MyProvider = ({ children }) => {
   const [prevChats, setPrevChats] = useState([]);
   const [input, setInput] = useState("");
 
+  const API = import.meta.env.VITE_API_URL;
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -22,7 +24,7 @@ export const MyProvider = ({ children }) => {
     setInput("");
 
     try {
-      const response = await fetch("http://localhost:5000/chat", {
+      const response = await fetch(`${API}/api/chat`, {   
         method: "POST",
         headers: {
           "Content-Type": "application/json"
