@@ -1,5 +1,14 @@
+body {
+  margin: 0;
+  background: #0d1117 !important;
+}
+
+#root {
+  background: #0d1117 !important;
+}
+
 .share-container {
-  height: 100vh;
+  min-height: 100vh;
   background: #0d1117;
   color: #e6edf3;
   font-family: "Segoe UI", sans-serif;
@@ -15,8 +24,9 @@
 
 .share-header {
   text-align: center;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
   margin-bottom: 5px;
 }
 
@@ -48,7 +58,7 @@
 
 .user-msg {
   background: linear-gradient(135deg, #2f81f7, #1f6feb);
-  color: #fff;
+  color: #ffffff !important;
   padding: 14px 16px;
   border-radius: 18px;
   max-width: 65%;
@@ -57,7 +67,7 @@
 
 .ai-msg {
   background: #161b22;
-  color: #e6edf3;
+  color: #e6edf3 !important;
   padding: 14px 16px;
   border-radius: 18px;
   max-width: 65%;
@@ -74,7 +84,8 @@
 .msg-content {
   font-size: 15px;
   line-height: 1.5;
-  color: #e6edf3;
+  color: #e6edf3 !important;
+  opacity: 1 !important;
 }
 
 .copy-btn {
@@ -100,4 +111,13 @@
   align-items: center;
   color: #8b949e;
   font-size: 18px;
+}
+
+.share-chatbox::-webkit-scrollbar {
+  width: 6px;
+}
+
+.share-chatbox::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 10px;
 }
