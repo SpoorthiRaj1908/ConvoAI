@@ -20,13 +20,15 @@ function Sidebar({ closeSidebar }) {
 
   const API = import.meta.env.VITE_API_URL;
 
+  const FRONTEND_URL =
+    import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2500);
   };
 
   const fetchThreads = async () => {
-
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -38,13 +40,7 @@ function Sidebar({ closeSidebar }) {
       });
 
       const data = await res.json();
-
-      if (Array.isArray(data)) {
-        setAllThreads(data);
-      } else {
-        setAllThreads([]);
-      }
-
+      setAllThreads(Array.isArray(data) ? data : []);
     } catch (err) {
       console.log(err);
       setAllThreads([]);
@@ -59,7 +55,6 @@ function Sidebar({ closeSidebar }) {
   }, []);
 
   const loadThread = async (threadid) => {
-
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -68,7 +63,6 @@ function Sidebar({ closeSidebar }) {
     }
 
     try {
-
       const res = await fetch(`${API}/api/thread/${threadid}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -81,7 +75,7 @@ function Sidebar({ closeSidebar }) {
       setPrevChats(data);
       setNewChat(false);
 
-      closeSidebar && closeSidebar();   
+      if (closeSidebar) closeSidebar();
 
     } catch (err) {
       console.log(err);
@@ -94,11 +88,10 @@ function Sidebar({ closeSidebar }) {
     setcurrthreadid(uuidv1());
     setNewChat(true);
 
-    closeSidebar && closeSidebar();  
+    if (closeSidebar) closeSidebar();
   };
 
   const deleteThread = async (threadid) => {
-
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -107,7 +100,6 @@ function Sidebar({ closeSidebar }) {
     }
 
     try {
-
       await fetch(`${API}/api/thread/${threadid}`, {
         method: "DELETE",
         headers: {
@@ -125,7 +117,6 @@ function Sidebar({ closeSidebar }) {
   };
 
   const renameThread = async (threadid, oldTitle) => {
-
     const newTitle = prompt("Rename chat", oldTitle);
     if (!newTitle) return;
 
@@ -137,7 +128,6 @@ function Sidebar({ closeSidebar }) {
     }
 
     try {
-
       await fetch(`${API}/api/thread/${threadid}`, {
         method: "PUT",
         headers: {
@@ -156,16 +146,28 @@ function Sidebar({ closeSidebar }) {
     }
   };
 
-  const shareThread = (threadid) => {
+  const shareThread = async (threadid) => {
+    const shareLink = `${FRONTEND_URL}/share/${threadid}`;
 
-    const shareLink = `${window.location.origin}/share/${threadid}`;
-    navigator.clipboard.writeText(shareLink);
-
-    showToast("Share link copied");
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "ConvoAI Chat",
+          text: "Check out this conversation",
+          url: shareLink,
+        });
+        showToast("Shared successfully");
+      } else {
+        await navigator.clipboard.writeText(shareLink);
+        showToast("Link copied");
+      }
+    } catch (err) {
+      console.log(err);
+      showToast("Sharing failed");
+    }
   };
 
   const handleSearch = async (query) => {
-
     setSearchQuery(query);
 
     if (!query) {
@@ -181,7 +183,6 @@ function Sidebar({ closeSidebar }) {
     }
 
     try {
-
       const res = await fetch(`${API}/api/search/${query}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -189,12 +190,7 @@ function Sidebar({ closeSidebar }) {
       });
 
       const data = await res.json();
-
-      if (Array.isArray(data)) {
-        setSearchResults(data);
-      } else {
-        setSearchResults([]);
-      }
+      setSearchResults(Array.isArray(data) ? data : []);
 
     } catch (err) {
       console.log(err);
@@ -203,19 +199,15 @@ function Sidebar({ closeSidebar }) {
   };
 
   return (
-
     <section className="sidebar">
 
       {toast && <div className="toast">{toast}</div>}
 
       <button className="newChatBtn" onClick={handleNewChat}>
-
         <img src={logo} alt="CONVOAI Logo" className="logo" />
-
         <span className="icon">
           <i className="fa-solid fa-pen-to-square"></i>
         </span>
-
       </button>
 
       <input
@@ -241,9 +233,7 @@ function Sidebar({ closeSidebar }) {
       )}
 
       <div className="threads">
-
         {(allThreads || []).map((thread) => (
-
           <div key={thread.threadid} className="threadRow">
 
             <div
@@ -282,9 +272,7 @@ function Sidebar({ closeSidebar }) {
             </div>
 
           </div>
-
         ))}
-
       </div>
 
       <div className="sign">
@@ -292,7 +280,6 @@ function Sidebar({ closeSidebar }) {
       </div>
 
     </section>
-
   );
 }
 

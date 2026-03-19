@@ -3,14 +3,16 @@ import Sidebar from "./Sidebar.jsx";
 import ChatWindow from "./ChatWindow.jsx";
 import Login from "./login.jsx";
 import Register from "./register.jsx";
+import SharePage from "./SharePage.jsx";
 import { MyContext } from './MyContext.jsx';
 import { useState, useEffect } from 'react';
 import { v1 as uuidv1 } from "uuid";
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 function App() {
 
   const savedToken = localStorage.getItem("token");
-
   const [token, setToken] = useState(savedToken);
 
   const [prompt, setPrompt] = useState("");
@@ -31,7 +33,6 @@ function App() {
     };
 
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -56,55 +57,61 @@ function App() {
   };
 
   return (
+    <Router>
 
-    <MyContext.Provider value={providerValues}>
+      <MyContext.Provider value={providerValues}>
 
-      <div className="app">
+        <Routes>
 
-        {isMobile && (
-          <div
-            className="mobileMenuBtn"
-            onClick={() => setShowSidebar(!showSidebar)}
-          >
-            ☰
-          </div>
-        )}
+          <Route
+            path="/"
+            element={
+              <>
+                <div className="app">
 
-        {(showSidebar || !isMobile) && (
-          <Sidebar closeSidebar={() => setShowSidebar(false)} />
-        )}
+                  {isMobile && (
+                    <div
+                      className="mobileMenuBtn"
+                      onClick={() => setShowSidebar(!showSidebar)}
+                    >
+                      ☰
+                    </div>
+                  )}
 
-        <ChatWindow />
+                  {(showSidebar || !isMobile) && (
+                    <Sidebar closeSidebar={() => setShowSidebar(false)} />
+                  )}
 
-      </div>
+                  <ChatWindow />
+                </div>
 
-      {!token && !showRegister && (
+                {!token && !showRegister && (
+                  <div className="authOverlay">
+                    <Login
+                      onLoginSuccess={handleLoginSuccess}
+                      openRegister={() => setShowRegister(true)}
+                    />
+                  </div>
+                )}
 
-        <div className="authOverlay">
-
-          <Login
-            onLoginSuccess={handleLoginSuccess}
-            openRegister={() => setShowRegister(true)}
+                {!token && showRegister && (
+                  <div className="authOverlay">
+                    <Register
+                      openLogin={() => setShowRegister(false)}
+                    />
+                  </div>
+                )}
+              </>
+            }
           />
 
-        </div>
+          <Route path="/share/:threadid" element={<SharePage />} />
 
-      )}
+        </Routes>
 
-      {!token && showRegister && (
+      </MyContext.Provider>
 
-        <div className="authOverlay">
-
-          <Register
-            openLogin={() => setShowRegister(false)}
-          />
-
-        </div>
-
-      )}
-
-    </MyContext.Provider>
-
+    </Router>
   );
 }
 
