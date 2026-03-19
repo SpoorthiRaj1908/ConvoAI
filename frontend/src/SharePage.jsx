@@ -19,9 +19,7 @@ function SharePage() {
       try {
         const res = await fetch(`${API}/api/share/${threadid}`);
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch");
-        }
+        if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
 
@@ -43,6 +41,10 @@ function SharePage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const copyMessage = (text) => {
+    navigator.clipboard.writeText(text);
+  };
+
   if (loading) {
     return (
       <div className="center-screen">
@@ -63,22 +65,43 @@ function SharePage() {
     <div className="share-container">
 
       <h2 className="share-header">
-        {title || "Shared Conversation"}
+        💬 {title || "Shared Conversation"}
       </h2>
 
+      <p className="share-subtext">
+        Shared via ConvoAI
+      </p>
+
       <div className="share-chatbox">
+
         {messages.length === 0 ? (
           <p>No messages found</p>
         ) : (
           messages.map((msg, index) => (
             <div
               key={index}
-              className={msg.role === "user" ? "user-msg" : "ai-msg"}
+              className={`message-wrapper ${
+                msg.role === "user" ? "user-wrap" : "ai-wrap"
+              }`}
             >
-              <div className="msg-role">
-                {msg.role === "user" ? "You" : "AI"}
+              <div
+                className={msg.role === "user" ? "user-msg" : "ai-msg"}
+              >
+                <div className="msg-role">
+                  {msg.role === "user" ? "You" : "AI"}
+                </div>
+
+                <div className="msg-content">
+                  {msg.content}
+                </div>
+
+                <button
+                  className="copy-btn"
+                  onClick={() => copyMessage(msg.content)}
+                >
+                  Copy
+                </button>
               </div>
-              <div>{msg.content}</div>
             </div>
           ))
         )}
