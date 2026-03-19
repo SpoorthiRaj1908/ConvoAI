@@ -6,306 +6,284 @@ import { ScaleLoader } from "react-spinners";
 
 function ChatWindow() {
 
-const {
-prompt,
-setPrompt,
-currthreadid,
-setcurrthreadid,
-prevChats,
-setPrevChats
-} = useContext(MyContext);
+  const {
+    prompt,
+    setPrompt,
+    currthreadid,
+    setcurrthreadid,
+    prevChats,
+    setPrevChats
+  } = useContext(MyContext);
 
-const [loading, setLoading] = useState(false);
-const [uploadedFile, setUploadedFile] = useState(null);
-const [voiceMode, setVoiceMode] = useState(false);
-const [recording, setRecording] = useState(false);
-const [showMenu,setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [toast, setToast] = useState("");
 
-const [toast,setToast] = useState("");
+  const recognitionRef = useRef(null);
 
-const recognitionRef = useRef(null);
+  // ✅ API from env
+  const API = import.meta.env.VITE_API_URL;
 
-
-const showFlash = (message) => {
-  setToast(message);
-  setTimeout(()=>{
-    setToast("");
-  },2500);
-};
-
-
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  showFlash("Logged out successfully");
-  setTimeout(()=>{
-    window.location.reload();
-  },1200);
-};
-
-
-const startListening = () => {
-
-  const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    showFlash("Voice recognition not supported");
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-
-  recognition.lang="en-US";
-  recognition.start();
-
-  recognitionRef.current=recognition;
-  setRecording(true);
-
-  recognition.onresult=(event)=>{
-
-    const transcript = event.results[0][0].transcript;
-
-    setPrompt(transcript);
-    setVoiceMode(true);
-
+  const showFlash = (message) => {
+    setToast(message);
+    setTimeout(() => {
+      setToast("");
+    }, 2500);
   };
 
-  recognition.onerror=()=>{
-    setRecording(false);
-    showFlash("Voice recognition error");
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    showFlash("Logged out successfully");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1200);
   };
 
-};
+  const startListening = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    if (!SpeechRecognition) {
+      showFlash("Voice recognition not supported");
+      return;
+    }
 
-const stopListening = () => {
+    const recognition = new SpeechRecognition();
 
-  if(recognitionRef.current){
+    recognition.lang = "en-US";
+    recognition.start();
 
-    recognitionRef.current.stop();
+    recognitionRef.current = recognition;
+    setRecording(true);
 
-    setRecording(false);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setPrompt(transcript);
+      setVoiceMode(true);
+    };
 
-    setTimeout(()=>{
-      getReply();
-    },300);
+    recognition.onerror = () => {
+      setRecording(false);
+      showFlash("Voice recognition error");
+    };
+  };
 
-  }
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setRecording(false);
 
-};
+      setTimeout(() => {
+        getReply();
+      }, 300);
+    }
+  };
 
+  const toggleMic = () => {
+    recording ? stopListening() : startListening();
+  };
 
-const toggleMic = () => {
-  recording ? stopListening() : startListening();
-};
+  const speak = (text) => {
+    if (!window.speechSynthesis) return;
 
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
 
-const speak = (text) => {
-  if(!window.speechSynthesis) return;
+    window.speechSynthesis.speak(speech);
+  };
 
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang="en-US";
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  window.speechSynthesis.speak(speech);
-};
+    setUploadedFile(file.name);
 
+    const formData = new FormData();
+    formData.append("file", file);
 
-const handleFileUpload = async(e)=>{
+    try {
+      await fetch(`${API}/upload`, {   // ✅ FIXED
+        method: "POST",
+        body: formData
+      });
 
-  const file = e.target.files[0];
-  if(!file) return;
+      showFlash("File uploaded");
 
-  setUploadedFile(file.name);
+    } catch {
+      showFlash("Upload failed");
+    }
+  };
 
-  const formData = new FormData();
-  formData.append("file",file);
+  const getReply = async () => {
 
-  try{
-    await fetch("http://localhost:5000/upload",{
-      method:"POST",
-      body:formData
-    });
+    if (!prompt.trim() || loading) return;
 
-    showFlash("File uploaded");
+    const messageToSend = prompt.trim();
 
-  }catch{
-    showFlash("Upload failed");
-  }
+    const updatedChats = [
+      ...prevChats,
+      { role: "user", content: messageToSend }
+    ];
 
-};
+    setPrevChats(updatedChats);
 
+    setPrompt("");
+    setLoading(true);
+    setUploadedFile(null);
 
-const getReply = async()=>{
+    try {
 
-  if(!prompt.trim() || loading) return;
+      const token = localStorage.getItem("token");
 
-  const messageToSend = prompt.trim();
+      if (!token) {
+        showFlash("User not logged in");
+        setLoading(false);
+        return;
+      }
 
-  const updatedChats = [
-    ...prevChats,
-    { role: "user", content: messageToSend }
-  ];
+      const res = await fetch(`${API}/api/chat`, {   // ✅ FIXED
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          messages: updatedChats,
+          threadid: currthreadid
+        })
+      });
 
-  setPrevChats(updatedChats);
+      const data = await res.json();
 
-  setPrompt("");
-  setLoading(true);
-  setUploadedFile(null);
+      if (res.status === 401) {
+        showFlash("User not registered");
+        return;
+      }
 
-  try{
+      if (!res.ok) {
+        showFlash(data.error || "Something went wrong");
+        return;
+      }
 
-    const token = localStorage.getItem("token");
+      setPrevChats(prev => [
+        ...prev,
+        { role: "assistant", content: data.reply }
+      ]);
 
-    if(!token){
-      showFlash("User not logged in");
+      if (voiceMode) {
+        speak(data.reply);
+        setVoiceMode(false);
+      }
+
+      if (!currthreadid && data.threadid) {
+        setcurrthreadid(data.threadid);
+      }
+
+    } catch {
+      showFlash("Server connection failed");
+    } finally {
       setLoading(false);
-      return;
     }
 
-    const res = await fetch("http://localhost:5000/api/chat",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        Authorization:`Bearer ${token}`
-      },
-      body:JSON.stringify({
-        messages: updatedChats,   
-        threadid: currthreadid
-      })
-    });
+  };
 
-    const data = await res.json();
+  return (
 
-    if(res.status===401){
-      showFlash("User not registered");
-      return;
-    }
+    <div className="ChatWindow">
 
-    if(!res.ok){
-      showFlash(data.error || "Something went wrong");
-      return;
-    }
+      {toast && (
+        <div className="toast">
+          {toast}
+        </div>
+      )}
 
-    setPrevChats(prev=>[
-      ...prev,
-      {role:"assistant",content:data.reply}
-    ]);
+      <div className="navbar">
 
-    if(voiceMode){
-      speak(data.reply);
-      setVoiceMode(false);
-    }
+        <span>
+          CONVOAI <i className="fa-solid fa-chevron-down"></i>
+        </span>
 
-    if(!currthreadid && data.threadid){
-      setcurrthreadid(data.threadid);
-    }
+        <div className="usericondiv">
 
-  }catch{
-    showFlash("Server connection failed");
-  }finally{
-    setLoading(false);
-  }
+          <span
+            className="usericon"
+            onClick={() => setShowMenu(!showMenu)}
+          >
+            <i className="fa-solid fa-user"></i>
+          </span>
 
-};
+          {showMenu && (
 
-return(
+            <div className="userMenu">
 
-<div className="ChatWindow">
+              {localStorage.getItem("token") ? (
+                <p onClick={handleLogout}>Logout</p>
+              ) : (
+                <p>Login</p>
+              )}
 
-{toast && (
-<div className="toast">
-{toast}
-</div>
-)}
+            </div>
 
-<div className="navbar">
+          )}
 
-<span>
-CONVOAI <i className="fa-solid fa-chevron-down"></i>
-</span>
+        </div>
 
-<div className="usericondiv">
+      </div>
 
-<span
-className="usericon"
-onClick={()=>setShowMenu(!showMenu)}
->
-<i className="fa-solid fa-user"></i>
-</span>
+      <Chat />
 
-{showMenu && (
+      <div className="loaderContainer">
+        <ScaleLoader color="#fff" loading={loading} />
+      </div>
 
-<div className="userMenu">
+      <div className="chatinpt">
 
-{localStorage.getItem("token") ? (
+        {uploadedFile && (
+          <div className="filePreview">
+            📄 {uploadedFile}
+          </div>
+        )}
 
-<p onClick={handleLogout}>Logout</p>
+        <div className="userinpt">
 
-):( 
+          <label className="uploadIcon">
+            <i className="fa-solid fa-paperclip"></i>
+            <input type="file" hidden onChange={handleFileUpload} />
+          </label>
 
-<p>Login</p>
+          <div className="micBtn" onClick={toggleMic}>
+            <i className={`fa-solid ${recording ? "fa-stop" : "fa-microphone"}`}></i>
+          </div>
 
-)}
+          <input
+            type="text"
+            placeholder="Ask anything!"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") getReply();
+            }}
+            disabled={loading}
+          />
 
-</div>
+          <div id="submit" onClick={getReply}>
+            <i className="fa-solid fa-paper-plane"></i>
+          </div>
 
-)}
+        </div>
 
-</div>
+        <p className="info">
+          {loading ? "Thinking..." : "CONVOAI can make mistakes!"}
+        </p>
 
-</div>
+      </div>
 
-<Chat/>
+    </div>
 
-<div className="loaderContainer">
-<ScaleLoader color="#fff" loading={loading}/>
-</div>
-
-<div className="chatinpt">
-
-{uploadedFile && (
-<div className="filePreview">
-📄 {uploadedFile}
-</div>
-)}
-
-<div className="userinpt">
-
-<label className="uploadIcon">
-<i className="fa-solid fa-paperclip"></i>
-<input type="file" hidden onChange={handleFileUpload}/>
-</label>
-
-<div className="micBtn" onClick={toggleMic}>
-<i className={`fa-solid ${recording?"fa-stop":"fa-microphone"}`}></i>
-</div>
-
-<input
-type="text"
-placeholder="Ask anything!"
-value={prompt}
-onChange={(e)=>setPrompt(e.target.value)}
-onKeyDown={(e)=>{
-if(e.key==="Enter") getReply();
-}}
-disabled={loading}
-/>
-
-<div id="submit" onClick={getReply}>
-<i className="fa-solid fa-paper-plane"></i>
-</div>
-
-</div>
-
-<p className="info">
-{loading ? "Thinking..." : "CONVOAI can make mistakes!"}
-</p>
-
-</div>
-
-</div>
-
-);
+  );
 
 }
 
