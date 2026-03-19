@@ -11,15 +11,17 @@ body {
   min-height: 100vh;
   background: #0d1117;
   color: #e6edf3;
-  font-family: "Segoe UI", sans-serif;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .share-main {
   width: 100%;
-  max-width: 900px;
-  padding: 20px;
+  max-width: 800px;
+  padding: 0 20px;
 }
 
 .share-header {
@@ -27,7 +29,10 @@ body {
   font-size: 24px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+
+  white-space: normal;
+  word-break: break-word;
 }
 
 .share-subtext {
@@ -41,6 +46,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  padding: 20px;
 }
 
 .message-wrapper {
@@ -57,21 +67,21 @@ body {
 }
 
 .user-msg {
-  background: linear-gradient(135deg, #2f81f7, #1f6feb);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #ffffff !important;
   padding: 14px 16px;
   border-radius: 18px;
-  max-width: 65%;
-  box-shadow: 0 0 12px rgba(47, 129, 247, 0.4);
+  max-width: 75%;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
 .ai-msg {
-  background: #161b22;
+  background: #111827;
   color: #e6edf3 !important;
   padding: 14px 16px;
   border-radius: 18px;
-  max-width: 65%;
-  border: 1px solid #30363d;
+  max-width: 75%;
+  border: 1px solid #1f2937;
 }
 
 .msg-role {
@@ -120,4 +130,19 @@ body {
 .share-chatbox::-webkit-scrollbar-thumb {
   background: #30363d;
   border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .share-main {
+    padding: 0 12px;
+  }
+
+  .user-msg,
+  .ai-msg {
+    max-width: 90%;
+  }
+
+  .share-header {
+    font-size: 20px;
+  }
 }
