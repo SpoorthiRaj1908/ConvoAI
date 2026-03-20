@@ -29,16 +29,27 @@ function Sidebar({ closeSidebar }) {
     setTimeout(() => setToast(""), 2500);
   };
 
+  const getHeaders = () => {
+    const token = localStorage.getItem("token");
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    };
+  };
+
   const fetchThreads = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
       const res = await fetch(`${API}/api/thread`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: getHeaders()
       });
+
+      if (res.status === 401) {
+        showToast("Session expired. Please login again");
+        return;
+      }
 
       const data = await res.json();
       setAllThreads(Array.isArray(data) ? data : []);
@@ -65,17 +76,19 @@ function Sidebar({ closeSidebar }) {
 
     try {
       const res = await fetch(`${API}/api/thread/${threadid}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: getHeaders()
       });
+
+      if (res.status === 401) {
+        showToast("Unauthorized");
+        return;
+      }
 
       const data = await res.json();
 
       setcurrthreadid(threadid);
       setPrevChats(data);
       setNewChat(false);
-
       setIsTyping(false);
 
       if (closeSidebar) closeSidebar();
@@ -90,7 +103,6 @@ function Sidebar({ closeSidebar }) {
     setPrevChats([]);
     setcurrthreadid(uuidv1());
     setNewChat(true);
-
     setIsTyping(false);
 
     if (closeSidebar) closeSidebar();
@@ -107,9 +119,7 @@ function Sidebar({ closeSidebar }) {
     try {
       await fetch(`${API}/api/thread/${threadid}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: getHeaders()
       });
 
       fetchThreads();
@@ -135,10 +145,7 @@ function Sidebar({ closeSidebar }) {
     try {
       await fetch(`${API}/api/thread/${threadid}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
+        headers: getHeaders(),
         body: JSON.stringify({ title: newTitle })
       });
 
@@ -189,10 +196,13 @@ function Sidebar({ closeSidebar }) {
 
     try {
       const res = await fetch(`${API}/api/search/${query}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: getHeaders()
       });
+
+      if (res.status === 401) {
+        showToast("Unauthorized");
+        return;
+      }
 
       const data = await res.json();
       setSearchResults(Array.isArray(data) ? data : []);
