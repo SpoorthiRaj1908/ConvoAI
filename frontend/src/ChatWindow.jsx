@@ -12,7 +12,8 @@ function ChatWindow() {
     currthreadid,
     setcurrthreadid,
     prevChats,
-    setPrevChats
+    setPrevChats,
+    setIsTyping   
   } = useContext(MyContext);
 
   const [loading, setLoading] = useState(false);
@@ -98,12 +99,10 @@ function ChatWindow() {
     const file = e.target.files[0];
     if (!file) return;
 
-    console.log("Selected file:", file);
-
     setUploadedFile(file.name);
 
     const formData = new FormData();
-    formData.append("file", file); 
+    formData.append("file", file);
 
     try {
       const res = await fetch(`${API}/upload`, {
@@ -111,9 +110,7 @@ function ChatWindow() {
         body: formData
       });
 
-      const data = await res.json(); 
-
-      console.log("Upload response:", data);
+      const data = await res.json();
 
       if (!res.ok) {
         showFlash(data.error || "Upload failed");
@@ -122,8 +119,7 @@ function ChatWindow() {
 
       showFlash("File uploaded successfully");
 
-    } catch (err) {
-      console.log(err);
+    } catch {
       showFlash("Upload failed");
     }
   };
@@ -179,6 +175,8 @@ function ChatWindow() {
         return;
       }
 
+      setIsTyping(true);
+
       setPrevChats(prev => [
         ...prev,
         { role: "assistant", content: data.reply }
@@ -205,11 +203,7 @@ function ChatWindow() {
 
     <div className="ChatWindow">
 
-      {toast && (
-        <div className="toast">
-          {toast}
-        </div>
-      )}
+      {toast && <div className="toast">{toast}</div>}
 
       <div className="navbar">
 
@@ -227,17 +221,13 @@ function ChatWindow() {
           </span>
 
           {showMenu && (
-
             <div className="userMenu">
-
               {localStorage.getItem("token") ? (
                 <p onClick={handleLogout}>Logout</p>
               ) : (
                 <p>Login</p>
               )}
-
             </div>
-
           )}
 
         </div>

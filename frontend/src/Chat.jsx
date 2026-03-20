@@ -10,12 +10,11 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function Chat() {
 
-  const { prevChats, setPrevChats } = useContext(MyContext);
+  const { prevChats, setPrevChats, isTyping, setIsTyping } = useContext(MyContext); 
 
   const [typedContent, setTypedContent] = useState("");
 
   const chatEndRef = useRef(null);
-
   const prevLengthRef = useRef(0);
 
   useEffect(() => {
@@ -34,6 +33,7 @@ function Chat() {
     const lastChat = prevChats?.[prevChats.length - 1];
 
     if (
+      !isTyping ||  
       prevChats.length <= prevLengthRef.current ||
       !lastChat ||
       lastChat.role !== "assistant"
@@ -52,6 +52,7 @@ function Chat() {
 
       if (!lastChat.content || index >= lastChat.content.length) {
         clearInterval(interval);
+        setIsTyping(false); 
         return;
       }
 
@@ -62,7 +63,7 @@ function Chat() {
 
     return () => clearInterval(interval);
 
-  }, [prevChats]);
+  }, [prevChats, isTyping]); 
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -127,7 +128,11 @@ function Chat() {
                         }
                       }}
                     >
-                      {isLastAssistant ? typedContent : chat.content}
+                      {
+                        isLastAssistant && isTyping   
+                          ? typedContent
+                          : chat.content
+                      }
                     </ReactMarkdown>
 
                   </div>

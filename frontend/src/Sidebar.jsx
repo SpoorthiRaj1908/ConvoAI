@@ -11,7 +11,8 @@ function Sidebar({ closeSidebar }) {
     setAllThreads,
     setcurrthreadid,
     setPrevChats,
-    setNewChat
+    setNewChat,
+    setIsTyping   
   } = useContext(MyContext);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,6 +76,8 @@ function Sidebar({ closeSidebar }) {
       setPrevChats(data);
       setNewChat(false);
 
+      setIsTyping(false);
+
       if (closeSidebar) closeSidebar();
 
     } catch (err) {
@@ -87,6 +90,8 @@ function Sidebar({ closeSidebar }) {
     setPrevChats([]);
     setcurrthreadid(uuidv1());
     setNewChat(true);
+
+    setIsTyping(false);
 
     if (closeSidebar) closeSidebar();
   };

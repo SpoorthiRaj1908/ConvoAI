@@ -22,6 +22,8 @@ function App() {
   const [currthreadid, setcurrthreadid] = useState(uuidv1());
   const [allThreads, setAllThreads] = useState([]);
 
+  const [isTyping, setIsTyping] = useState(false);
+
   const [showSidebar, setShowSidebar] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -53,7 +55,10 @@ function App() {
     prevChats,
     setPrevChats,
     allThreads,
-    setAllThreads
+    setAllThreads,
+
+    isTyping,
+    setIsTyping
   };
 
   return (
