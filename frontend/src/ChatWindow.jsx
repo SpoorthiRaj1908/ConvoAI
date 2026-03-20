@@ -24,7 +24,6 @@ function ChatWindow() {
 
   const recognitionRef = useRef(null);
 
-  // ✅ API from env
   const API = import.meta.env.VITE_API_URL;
 
   const showFlash = (message) => {
@@ -99,20 +98,32 @@ function ChatWindow() {
     const file = e.target.files[0];
     if (!file) return;
 
+    console.log("Selected file:", file);
+
     setUploadedFile(file.name);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file); 
 
     try {
-      await fetch(`${API}/upload`, {   // ✅ FIXED
+      const res = await fetch(`${API}/upload`, {
         method: "POST",
         body: formData
       });
 
-      showFlash("File uploaded");
+      const data = await res.json(); 
 
-    } catch {
+      console.log("Upload response:", data);
+
+      if (!res.ok) {
+        showFlash(data.error || "Upload failed");
+        return;
+      }
+
+      showFlash("File uploaded successfully");
+
+    } catch (err) {
+      console.log(err);
       showFlash("Upload failed");
     }
   };
@@ -144,7 +155,7 @@ function ChatWindow() {
         return;
       }
 
-      const res = await fetch(`${API}/api/chat`, {   // ✅ FIXED
+      const res = await fetch(`${API}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -251,7 +262,12 @@ function ChatWindow() {
 
           <label className="uploadIcon">
             <i className="fa-solid fa-paperclip"></i>
-            <input type="file" hidden onChange={handleFileUpload} />
+            <input
+              type="file"
+              accept="application/pdf"
+              hidden
+              onChange={handleFileUpload}
+            />
           </label>
 
           <div className="micBtn" onClick={toggleMic}>
