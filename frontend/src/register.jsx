@@ -25,7 +25,12 @@ function Register({ onRegisterSuccess, openLogin }) {
         body: JSON.stringify({ name, email, password })
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = { message: "Invalid JSON response from server" };
+      }
 
       if (res.ok) {
 
@@ -38,12 +43,14 @@ function Register({ onRegisterSuccess, openLogin }) {
         window.location.reload();
 
       } else {
-        console.error("Register failed:", data);
+        console.error("Register failed:", data.message || data);
+        alert(data.message || "Registration failed");
       }
 
     } catch (err) {
 
       console.error("Error:", err);
+      alert("Something went wrong. Check backend.");
 
     } finally {
 
