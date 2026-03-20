@@ -12,52 +12,78 @@ const upload = multer({
 });
 
 
-router.post("/", upload.single("file"), async (req, res) => {
-  try {
-    console.log(" Upload route hit");
+router.post("/", (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    try {
+      console.log(" Upload route hit");
 
-    if (!req.file) {
-      console.log(" No file received");
-      return res.status(400).json({ error: "No file uploaded" });
+      if (err) {
+        console.error(" Multer error:", err);
+        return res.status(400).json({
+          error: "File upload error",
+          details: err.message,
+        });
+      }
+
+      if (!req.file) {
+        console.log(" No file received");
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      console.log(" File:", req.file.originalname);
+      console.log(" Size:", req.file.size);
+      console.log(" Type:", req.file.mimetype);
+
+    
+      if (!req.file.mimetype.includes("pdf")) {
+        return res.status(400).json({
+          error: "Only PDF files allowed",
+        });
+      }
+
+    
+      let text = "";
+
+      try {
+        console.log(" Parsing PDF...");
+        const pdfData = await pdf(req.file.buffer);
+        text = pdfData.text;
+        console.log(" PDF parsed successfully");
+      } catch (parseErr) {
+        console.error(" PDF parse failed:", parseErr);
+        return res.status(500).json({
+          error: "PDF parsing failed",
+          details: parseErr.message,
+        });
+      }
+
+      
+      if (!text || text.trim().length === 0) {
+        return res.status(400).json({
+          error: "PDF has no readable text",
+        });
+      }
+
+   
+      setDocumentText(text);
+
+      console.log(" Text length:", text.length);
+
+      return res.status(200).json({
+        message: "PDF uploaded successfully",
+        textLength: text.length,
+      });
+
+    } catch (err) {
+      console.error(" Upload route crash:", err);
+
+      return res.status(500).json({
+        error: "Unexpected server error",
+        details: err.message,
+        stack: err.stack,
+      });
     }
-
-    console.log(" File:", req.file.originalname);
-    console.log(" Size:", req.file.size);
-    console.log(" Type:", req.file.mimetype);
-
-    if (!req.file.mimetype.includes("pdf")) {
-      console.log(" Invalid file type:", req.file.mimetype);
-      return res.status(400).json({ error: "Only PDF files allowed" });
-    }
-
-    console.log(" Parsing PDF...");
-    const pdfData = await pdf(req.file.buffer);
-    console.log(" PDF parsed successfully");
-
-    const text = pdfData.text;
-
-    if (!text || text.trim().length === 0) {
-      console.log(" Empty PDF text");
-      return res.status(400).json({ error: "PDF has no readable text" });
-    }
-
-    setDocumentText(text);
-
-    console.log(" Text length:", text.length);
-
-    return res.status(200).json({
-      message: "PDF uploaded successfully",
-      textLength: text.length,
-    });
-
-  } catch (err) {
-    console.error(" PDF processing error:", err);
-
-    return res.status(500).json({
-      error: "PDF processing failed",
-      details: err.message,
-    });
-  }
+  });
 });
 
 export default router;
