@@ -11,41 +11,48 @@ dotenv.config();
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
+app.use(
+  cors({
+    origin: [
+      "https://convo-ai-owbu.vercel.app",
+      "http://localhost:5173",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
-  next();
-});
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 app.get("/", (req, res) => {
-  res.send("Backend is running ");
+  res.send("Backend is running");
 });
 
 app.use("/api/auth", authRoutes);
 app.use("/api", chatRoutes);
 app.use("/upload", uploadRoutes);
 
+
 app.use((err, req, res, next) => {
-  console.error(" ERROR:", err);
+  console.error("Server Error:", err);
   res.status(500).json({ error: err.message });
 });
 
+
 mongoose
   .connect(process.env.MONGODB_URL)
-  .then(() => console.log(" MongoDB connected"))
-  .catch((err) => console.log(" DB error:", err));
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("DB error:", err));
+
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(` Server running on ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
