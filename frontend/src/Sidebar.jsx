@@ -31,10 +31,16 @@ function Sidebar({ closeSidebar }) {
 
   const getHeaders = () => {
     const token = localStorage.getItem("token");
-    return {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+
+    const headers = {
+      "Content-Type": "application/json"
     };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    return headers;
   };
 
   const fetchThreads = async () => {
