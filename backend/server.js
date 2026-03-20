@@ -11,8 +11,22 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://convo-ai-owbu.vercel.app",
+      "http://localhost:5173"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+app.options("*", cors());
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Backend is running ");
@@ -22,16 +36,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api", chatRoutes);
 app.use("/upload", uploadRoutes);
 
-const PORT = process.env.PORT || 5000;
+app.use((err, req, res, next) => {
+  console.error(" Server Error:", err);
+  res.status(500).json({ error: err.message });
+});
 
 mongoose
   .connect(process.env.MONGODB_URL)
-  .then(() => {
-    console.log(" Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("DB connection failed:", err.message);
-  });
+  .then(() => console.log(" Connected to MongoDB"))
+  .catch((err) => console.error(" DB connection failed:", err.message));
+
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(` Server running on port ${PORT}`);
