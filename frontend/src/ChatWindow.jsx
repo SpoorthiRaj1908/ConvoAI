@@ -13,7 +13,7 @@ function ChatWindow() {
     setcurrthreadid,
     prevChats,
     setPrevChats,
-    setIsTyping   
+    setIsTyping
   } = useContext(MyContext);
 
   const [loading, setLoading] = useState(false);
@@ -99,7 +99,12 @@ function ChatWindow() {
     const file = e.target.files[0];
     if (!file) return;
 
-    setUploadedFile(file.name);
+    if (!file.type.includes("pdf")) {
+      showFlash("Only PDF files allowed ");
+      return;
+    }
+
+    setUploadedFile(` ${file.name}`);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -113,14 +118,15 @@ function ChatWindow() {
       const data = await res.json();
 
       if (!res.ok) {
-        showFlash(data.error || "Upload failed");
+        showFlash(data.error || "PDF upload failed ");
         return;
       }
 
-      showFlash("File uploaded successfully");
+      showFlash("PDF uploaded successfully ");
 
-    } catch {
-      showFlash("Upload failed");
+    } catch (err) {
+      console.log(err);
+      showFlash("Server error while uploading ");
     }
   };
 
@@ -244,7 +250,7 @@ function ChatWindow() {
 
         {uploadedFile && (
           <div className="filePreview">
-            📄 {uploadedFile}
+            {uploadedFile}
           </div>
         )}
 
