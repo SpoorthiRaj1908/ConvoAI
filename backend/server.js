@@ -12,27 +12,30 @@ dotenv.config();
 const app = express();
 
 
-app.use(
-  cors({
-    origin: [
-      "https://convo-ai-owbu.vercel.app",
-      "http://localhost:5173",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+ 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://convo-ai-owbu.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-app.options("*", cors());
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
+
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api", chatRoutes);
@@ -49,7 +52,6 @@ mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("DB error:", err));
-
 
 const PORT = process.env.PORT || 5000;
 
